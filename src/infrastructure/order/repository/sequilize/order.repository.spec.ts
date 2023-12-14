@@ -81,4 +81,65 @@ describe("Order repository test", () => {
       ],
     });
   });
+
+  it.only("should update a order", async () => {
+    const orderRepository = new OrderRepository();
+    const orderItens = [new OrderItem('any_id', 'any_name', 100, 'any_productId', 1)];
+    const order = new Order("any_id", "any_customerId", orderItens);
+
+    await orderRepository.create(order);
+
+    const orderModel = await OrderModel.findOne({ where: { id: "any_id" } });
+
+    expect(orderModel.toJSON()).toStrictEqual({
+      id: "any_id",
+      customerId: "any_customerId",
+      items: orderItens,
+    });
+
+    // order.changeName("Product 2");
+    // order.changePrice(200);
+
+    // await productRepository.update(product);
+
+    // const productModel2 = await ProductModel.findOne({ where: { id: "1" } });
+
+    // expect(productModel2.toJSON()).toStrictEqual({
+    //   id: "1",
+    //   name: "Product 2",
+    //   price: 200,
+    // });
+  });
+
+  it("should find a product", async () => {
+    const productRepository = new ProductRepository();
+    const product = new Product("1", "Product 1", 100);
+
+    await productRepository.create(product);
+
+    const productModel = await ProductModel.findOne({ where: { id: "1" } });
+
+    const foundProduct = await productRepository.find("1");
+
+    expect(productModel.toJSON()).toStrictEqual({
+      id: foundProduct.id,
+      name: foundProduct.name,
+      price: foundProduct.price,
+    });
+  });
+
+  it("should find all products", async () => {
+    const productRepository = new ProductRepository();
+    const product = new Product("1", "Product 1", 100);
+    await productRepository.create(product);
+
+    const product2 = new Product("2", "Product 2", 200);
+    await productRepository.create(product2);
+
+    const foundProducts = await productRepository.findAll();
+    const products = [product, product2];
+
+    expect(products).toEqual(foundProducts);    
+  });
+  
 });
